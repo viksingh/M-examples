@@ -1,0 +1,12 @@
+let 
+    checkLAName = (laname) => 
+{
+
+if (1 = 1) then true
+else false
+
+}
+
+in 
+
+checkLAName ("ams-pp-basepriceint007-osprey-usw2-la-001")
