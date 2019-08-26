@@ -1,0 +1,7 @@
+Access list element.
+
+let a = "Hello",
+b = a & ",",
+c = b & "World",
+d = Text.Split(c,",")
+in d{0}
