@@ -1,0 +1,6 @@
+if  (
+(Text.Split([WorkflowName],"-"){0} = "ams" or Text.Split([WorkflowName],"-"){0} = "glb" or Text.Split([WorkflowName],"-"){0} = "eur" or Text.Split([WorkflowName],"-"){0} = "aoa")and
+(Text.Split([WorkflowName],"-"){1} = "dv" or Text.Split([WorkflowName],"-"){1} = "rt" or Text.Split([WorkflowName],"-"){1} = "pp" or Text.Split([WorkflowName],"-"){1} = "pr")
+    )
+ then 1 else 0
+
