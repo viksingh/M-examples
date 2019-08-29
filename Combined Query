@@ -1,0 +1,87 @@
+let AnalyticsQuery =
+let Source = Json.Document(Web.Contents("https://api.loganalytics.io/v1/workspaces/0b02d119-03d2-45dd-a254-d639c9151637/query", 
+[Query=[#"query"="AzureDiagnostics
+| where Category == ""WorkflowRuntime""
+| where OperationName == ""Microsoft.Logic/workflows/workflowRunCompleted""
+| join kind = rightouter
+(
+    AzureDiagnostics
+    | where Category == ""WorkflowRuntime""
+    | where OperationName == ""Microsoft.Logic/workflows/workflowRunStarted""
+    | where resource_runId_s in (( AzureDiagnostics
+    | where Category == ""WorkflowRuntime""
+    | where OperationName == ""Microsoft.Logic/workflows/workflowTriggerCompleted""
+    | project resource_runId_s ))
+    | project WorkflowStartStatus=status_s, WorkflowNameFromInnerQuery=resource_workflowName_s, WorkflowIdFromInnerQuery=workflowId_s, resource_runId_s
+)
+on resource_runId_s
+| extend WorkflowStatus=iff(isnotempty(status_s), status_s, WorkflowStartStatus)
+| extend WorkflowName=iff(isnotempty(resource_workflowName_s), resource_workflowName_s, WorkflowNameFromInnerQuery)
+| extend WorkflowId=iff(isnotempty(workflowId_s), workflowId_s, WorkflowIdFromInnerQuery)
+| summarize Count=count() by WorkflowId, WorkflowName, WorkflowStatus
+",#"x-ms-app"="OmsAnalyticsPBI",#"timespan"="P7D",#"prefer"="ai.response-thinning=true"],Timeout=#duration(0,0,4,0)])),
+TypeMap = #table(
+{ "AnalyticsTypes", "Type" }, 
+{ 
+{ "string",   Text.Type },
+{ "int",      Int32.Type },
+{ "long",     Int64.Type },
+{ "real",     Double.Type },
+{ "timespan", Duration.Type },
+{ "datetime", DateTimeZone.Type },
+{ "bool",     Logical.Type },
+{ "guid",     Text.Type },
+{ "dynamic",  Text.Type }
+}),
+
+DataTable = Source[tables]{0},
+Columns = Table.FromRecords(DataTable[columns]),
+ColumnsWithType = Table.Join(Columns, {"type"}, TypeMap , {"AnalyticsTypes"}),
+Rows = Table.FromRows(DataTable[rows], Columns[name]), 
+Table = Table.TransformColumnTypes(Rows, Table.ToList(ColumnsWithType, (c) => { c{0}, c{3}})),
+
+Source2 = Json.Document(Web.Contents("https://api.loganalytics.io/v1/workspaces/3fa49567-95c8-4016-b3ba-1e722cda89cf/query", 
+[Query=[#"query"="AzureDiagnostics
+| where Category == ""WorkflowRuntime""
+| where OperationName == ""Microsoft.Logic/workflows/workflowRunCompleted""
+| join kind = rightouter
+(
+    AzureDiagnostics
+    | where Category == ""WorkflowRuntime""
+    | where OperationName == ""Microsoft.Logic/workflows/workflowRunStarted""
+    | where resource_runId_s in (( AzureDiagnostics
+    | where Category == ""WorkflowRuntime""
+    | where OperationName == ""Microsoft.Logic/workflows/workflowTriggerCompleted""
+    | project resource_runId_s ))
+    | project WorkflowStartStatus=status_s, WorkflowNameFromInnerQuery=resource_workflowName_s, WorkflowIdFromInnerQuery=workflowId_s, resource_runId_s
+)
+on resource_runId_s
+| extend WorkflowStatus=iff(isnotempty(status_s), status_s, WorkflowStartStatus)
+| extend WorkflowName=iff(isnotempty(resource_workflowName_s), resource_workflowName_s, WorkflowNameFromInnerQuery)
+| extend WorkflowId=iff(isnotempty(workflowId_s), workflowId_s, WorkflowIdFromInnerQuery)
+| summarize Count=count() by WorkflowId, WorkflowName, WorkflowStatus
+",#"x-ms-app"="OmsAnalyticsPBI",#"timespan"="P1D",#"prefer"="ai.response-thinning=true"],Timeout=#duration(0,0,4,0)])),
+TypeMap1 = #table(
+{ "AnalyticsTypes", "Type" }, 
+{ 
+{ "string",   Text.Type },
+{ "int",      Int32.Type },
+{ "long",     Int64.Type },
+{ "real",     Double.Type },
+{ "timespan", Duration.Type },
+{ "datetime", DateTimeZone.Type },
+{ "bool",     Logical.Type },
+{ "guid",     Text.Type },
+{ "dynamic",  Text.Type }
+}),
+DataTable2 = Source2[tables]{0},
+Columns2 = Table.FromRecords(DataTable2[columns]),
+ColumnsWithType2 = Table.Join(Columns2, {"type"}, TypeMap1 , {"AnalyticsTypes"}),
+Rows2 = Table.FromRows(DataTable2[rows], Columns2[name]), 
+Table2 = Table.TransformColumnTypes(Rows2, Table.ToList(ColumnsWithType2, (c) => { c{0}, c{3}})),
+
+FinalSource = Table.Combine({Table,Table2})
+
+in
+FinalSource 
+in AnalyticsQuery
