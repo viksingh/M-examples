@@ -19,7 +19,7 @@ on resource_runId_s
 | extend WorkflowName=iff(isnotempty(resource_workflowName_s), resource_workflowName_s, WorkflowNameFromInnerQuery)
 | extend WorkflowId=iff(isnotempty(workflowId_s), workflowId_s, WorkflowIdFromInnerQuery)
 | summarize Count=count() by WorkflowId, WorkflowName, WorkflowStatus
-",#"x-ms-app"="OmsAnalyticsPBI",#"timespan"="P7D",#"prefer"="ai.response-thinning=true"],Timeout=#duration(0,0,4,0)])),
+",#"x-ms-app"="OmsAnalyticsPBI",#"timespan"="P30D",#"prefer"="ai.response-thinning=true"],Timeout=#duration(0,0,4,0)])),
 TypeMap1 = #table(
 { "AnalyticsTypes", "Type" }, 
 { 
@@ -60,7 +60,7 @@ on resource_runId_s
 | extend WorkflowName=iff(isnotempty(resource_workflowName_s), resource_workflowName_s, WorkflowNameFromInnerQuery)
 | extend WorkflowId=iff(isnotempty(workflowId_s), workflowId_s, WorkflowIdFromInnerQuery)
 | summarize Count=count() by WorkflowId, WorkflowName, WorkflowStatus
-",#"x-ms-app"="OmsAnalyticsPBI",#"timespan"="P1D",#"prefer"="ai.response-thinning=true"],Timeout=#duration(0,0,4,0)])),
+",#"x-ms-app"="OmsAnalyticsPBI",#"timespan"="P30D",#"prefer"="ai.response-thinning=true"],Timeout=#duration(0,0,4,0)])),
 TypeMap2 = #table(
 { "AnalyticsTypes", "Type" }, 
 { 
@@ -101,7 +101,7 @@ on resource_runId_s
 | extend WorkflowName=iff(isnotempty(resource_workflowName_s), resource_workflowName_s, WorkflowNameFromInnerQuery)
 | extend WorkflowId=iff(isnotempty(workflowId_s), workflowId_s, WorkflowIdFromInnerQuery)
 | summarize Count=count() by WorkflowId, WorkflowName, WorkflowStatus
-",#"x-ms-app"="OmsAnalyticsPBI",#"timespan"="P1D",#"prefer"="ai.response-thinning=true"],Timeout=#duration(0,0,4,0)])),
+",#"x-ms-app"="OmsAnalyticsPBI",#"timespan"="P30D",#"prefer"="ai.response-thinning=true"],Timeout=#duration(0,0,4,0)])),
 TypeMap3 = #table(
 { "AnalyticsTypes", "Type" }, 
 { 
